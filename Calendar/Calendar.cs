@@ -28,10 +28,10 @@ namespace Calendar
         private static CalendarItem GetCalendarItemForDay(int year, int month, int day, int startWeek)
         {
             var tmpDate = new DateTime(year, month, day);
-            var dayInWeek = (int) tmpDate.DayOfWeek;
-            var dayOfWeek = (dayInWeek == 0 ? 7 : dayInWeek) - 1;
+            var dayOfWeek = (int) tmpDate.DayOfWeek;
+            var dayInWeek = (dayOfWeek == 0 ? 7 : dayOfWeek) - 1;
             var week = GetWeekForDate(tmpDate);
-            var calendarItem = new CalendarItem(week - startWeek, dayOfWeek, day);
+            var calendarItem = new CalendarItem(week - startWeek, dayInWeek, day);
             return calendarItem;
         }
 

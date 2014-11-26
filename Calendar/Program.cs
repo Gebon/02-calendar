@@ -10,9 +10,18 @@ namespace Calendar
     {
         static void Main(string[] args)
         {
-            var date = DateTime.Parse("26.11.2014");
-            CalendarPageViewGenerator.GenerateCalendarPageForDate(DateTime.Now);
+            var date = new DateTime();
+            if (args.Length != 0 && !DateTime.TryParse(args[0], out date))
+            {
+                Console.WriteLine("Usage example: calendar.exe 25.01.2145");
+                Environment.Exit(0);
+            }
 
+            if (args.Length == 0)
+                date = DateTime.Now;
+
+            var calendarPageView = CalendarPageViewGenerator.GenerateCalendarPageViewForDate(date);
+            calendarPageView.Save("tmp.png");
         }
     }
 }
