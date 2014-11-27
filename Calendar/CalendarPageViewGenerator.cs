@@ -12,21 +12,7 @@ namespace Calendar
         const int DaysInWeekCount = 7;
         public static Bitmap GenerateCalendarPageViewForDate(DateTime date)
         {
-            var monthNames = new Dictionary<int, string>
-            {
-                {1, "January"},
-                {2, "February"},
-                {3, "March"},
-                {4, "April"},
-                {5, "May"},
-                {6, "June"},
-                {7, "Jule"},
-                {8, "August"},
-                {9, "September"},
-                {10, "October"},
-                {11, "November"},
-                {12, "December"}
-            };
+            var monthNames = new[] { "January", "February", "March", "April", "May", "June", "Jule", "August", "September", "October", "November", "December" };
             const int spriteWidth = 105;
             const int spriteHeight = 105;
 
@@ -45,7 +31,7 @@ namespace Calendar
             var bitmap = new Bitmap(pageWidth, pageHeight);
 
             var calendarGrid = GenerateCalendarGrid(spriteWidth, spriteHeight, weeksCount, page);
-            var header = GenerateHeader(monthNames[date.Month], date.Year, pageWidth, headerHeight);
+            var header = GenerateHeader(monthNames[date.Month - 1], date.Year, pageWidth, headerHeight);
             var daysOfWeekHeader = GenerateDaysOfWeekHeader(daysOfWeekWidth, daysOfWeekHeight, spriteWidth);
             Bitmap weeksColumn = GenerateWeeksColumn(page.StartWeek, page.EndWeek, weeksColumnWidth, weeksColumnHeight, spriteHeight, daysOfWeekHeight);
 
@@ -70,7 +56,7 @@ namespace Calendar
                 foreach (var week in Enumerable.Range(startWeek, endWeek - startWeek + 1))
                 {
                     var index = week - startWeek + 1;
-                    g.DrawString(week.ToString(), new Font("Calibri", 30), Brushes.Blue, width * 0.35f, (index - 0.8f)  * spriteHeight + space);
+                    g.DrawString(week.ToString(), new Font("Calibri", 30), Brushes.Blue, width * 0.35f, (index - 0.8f) * spriteHeight + space);
                 }
             }
             return bitmap;
@@ -79,24 +65,15 @@ namespace Calendar
         private static Bitmap GenerateDaysOfWeekHeader(int width, int height, int spriteWidth)
         {
             var bitmap = new Bitmap(width, height);
-            var dayOfWeekName = new Dictionary<int, string>
-            {
-                {1, "Mon"},
-                {2, "Tue"},
-                {3, "Wed"},
-                {4, "Thu"},
-                {5, "Fri"},
-                {6, "Sat"},
-                {7, "Sun"}
-            };
+            var dayOfWeekName = new[] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
             using (var g = Graphics.FromImage(bitmap))
             {
                 foreach (var dayOfWeek in Enumerable.Range(1, 7))
                 {
-                    g.DrawString(dayOfWeekName[dayOfWeek], new Font("Calibri", 20), Brushes.Blue,
-                        (float)(spriteWidth * (dayOfWeek  - 0.7)),
-                        (float)(height*0.1));
+                    g.DrawString(dayOfWeekName[dayOfWeek - 1], new Font("Calibri", 20), Brushes.Blue,
+                        (float)(spriteWidth * (dayOfWeek - 0.7)),
+                        (float)(height * 0.1));
                 }
             }
 
@@ -118,7 +95,7 @@ namespace Calendar
         private static Bitmap GenerateCalendarGrid(int spriteWidth, int spriteHeight, int weeksCount, CalendarPage page)
         {
             var bitmap = new Bitmap(spriteWidth * DaysInWeekCount, spriteHeight * weeksCount);
-            var sprites = Image.FromFile("sprite-bg.gif");
+            var sprites = Image.FromFile("Sprites/sprite-bg.gif");
 
             using (var g = Graphics.FromImage(bitmap))
             {
