@@ -1,121 +1,151 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Calendar
 {
-    public static class CalendarPageViewGenerator
+    public class CalendarPageViewGenerator
     {
-        const int DaysInWeekCount = 7;
-        public static Bitmap GenerateCalendarPageViewForDate(DateTime date)
+        #region Constants and properities declaration
+
+        private readonly string[] monthNames = { "January", "February", "March", "April", "May", "June", "Jule", "August", "September", "October", "November", "December" };
+        private readonly string[] dayOfWeekName = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+
+        private const int DaysInWeekCount = 7;
+
+        private const int SpriteWidth = 105;
+        private const int SpriteHeight = 105;
+
+        private const int WeeksColumnWidth = 100;
+        private int WeeksColumnHeight { get; set; }
+
+        private const int MainHeaderHeight = 100;
+
+        private const int DaysOfWeekHeaderHeight = 50;
+        private const int DaysOfWeekHeaderWidth = PageWidth - WeeksColumnWidth;
+
+        private const int PageWidth = SpriteWidth * DaysInWeekCount + WeeksColumnWidth;
+        private int PageHeight { get; set; }
+
+
+        private readonly CalendarPage page;
+        private readonly int weeksCount;
+
+        #endregion
+        public CalendarPageViewGenerator(CalendarPageGenerator pageGenerator)
         {
-            var monthNames = new[] { "January", "February", "March", "April", "May", "June", "Jule", "August", "September", "October", "November", "December" };
-            const int spriteWidth = 105;
-            const int spriteHeight = 105;
+            page = pageGenerator.GenerateCalendarPage();
+            weeksCount = page.EndWeek - page.StartWeek + 1;
+            WeeksColumnHeight = SpriteHeight * weeksCount + DaysOfWeekHeaderHeight;
+            PageHeight = WeeksColumnHeight + MainHeaderHeight;
+        }
 
-            var page = Calendar.GetCalendarPageForDate(date);
-            var weeksCount = page.EndWeek - page.StartWeek + 1;
+        public Bitmap GenerateCalendarPageView()
+        {
+            var calendarGrid = GenerateCalendarGrid();
+            var header = GenerateHeader();
+            var daysOfWeekHeader = GenerateDaysOfWeekHeader();
+            var weeksColumn = GenerateWeeksColumn();
 
-            const int weeksColumnWidth = 100;
-            var pageWidth = spriteWidth * 7 + weeksColumnWidth;
-            var daysOfWeekWidth = pageWidth - weeksColumnWidth;
-
-            const int headerHeight = 100;
-            const int daysOfWeekHeight = 50;
-            var weeksColumnHeight = spriteHeight * weeksCount + daysOfWeekHeight;
-            var pageHeight = weeksColumnHeight + headerHeight;
-
-            var bitmap = new Bitmap(pageWidth, pageHeight);
-
-            var calendarGrid = GenerateCalendarGrid(spriteWidth, spriteHeight, weeksCount, page);
-            var header = GenerateHeader(monthNames[date.Month - 1], date.Year, pageWidth, headerHeight);
-            var daysOfWeekHeader = GenerateDaysOfWeekHeader(daysOfWeekWidth, daysOfWeekHeight, spriteWidth);
-            Bitmap weeksColumn = GenerateWeeksColumn(page.StartWeek, page.EndWeek, weeksColumnWidth, weeksColumnHeight, spriteHeight, daysOfWeekHeight);
-
-            using (var g = Graphics.FromImage(bitmap))
+            Action<Graphics> componeCalendarModules = g =>
             {
                 g.DrawImage(header, 0, 0);
-                g.DrawImage(daysOfWeekHeader, pageWidth - daysOfWeekWidth, pageHeight - weeksColumnHeight);
-                g.DrawImage(weeksColumn, 0, pageHeight - weeksColumnHeight);
-                g.DrawImage(calendarGrid, bitmap.Width - calendarGrid.Width, bitmap.Height - calendarGrid.Height);
-            }
+                g.DrawImage(daysOfWeekHeader, PageWidth - DaysOfWeekHeaderWidth, PageHeight - WeeksColumnHeight);
+                g.DrawImage(weeksColumn, 0, PageHeight - WeeksColumnHeight);
+                g.DrawImage(calendarGrid, PageWidth - calendarGrid.Width, PageHeight - calendarGrid.Height);
+            };
 
-            return bitmap;
+            return GenerateBitmap(PageWidth, PageHeight, componeCalendarModules);
         }
 
-        private static Bitmap GenerateWeeksColumn(int startWeek, int endWeek, int width, int height, int spriteHeight, int space)
+        private Bitmap GenerateWeeksColumn()
         {
-            var bitmap = new Bitmap(width, height);
+            return GenerateBitmap(WeeksColumnWidth, WeeksColumnHeight, DrawWeeksColumn);
+        }
 
-            using (var g = Graphics.FromImage(bitmap))
+        private void DrawWeeksColumn(Graphics g)
+        {
+            g.DrawString("#", new Font("Calibri", 30), Brushes.Blue, WeeksColumnWidth * 0.35f, DaysOfWeekHeaderHeight * 0.3f);
+            foreach (var week in Enumerable.Range(page.StartWeek, page.EndWeek - page.StartWeek + 1))
             {
-                g.DrawString("#", new Font("Calibri", 30), Brushes.Blue, width * 0.35f, space * 0.3f);
-                foreach (var week in Enumerable.Range(startWeek, endWeek - startWeek + 1))
-                {
-                    var index = week - startWeek + 1;
-                    g.DrawString(week.ToString(), new Font("Calibri", 30), Brushes.Blue, width * 0.35f, (index - 0.8f) * spriteHeight + space);
-                }
+                var index = week - page.StartWeek + 1;
+                g.DrawString(week.ToString(CultureInfo.InvariantCulture), new Font("Calibri", 30),
+                    Brushes.Blue, WeeksColumnWidth * 0.35f, (index - 0.8f) * SpriteHeight + DaysOfWeekHeaderHeight);
             }
-            return bitmap;
         }
 
-        private static Bitmap GenerateDaysOfWeekHeader(int width, int height, int spriteWidth)
+        private Bitmap GenerateDaysOfWeekHeader()
         {
-            var bitmap = new Bitmap(width, height);
-            var dayOfWeekName = new[] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+            return GenerateBitmap(DaysOfWeekHeaderWidth, DaysOfWeekHeaderHeight, DrawDaysOfWeekHeader);
+        }
 
-            using (var g = Graphics.FromImage(bitmap))
+        private void DrawDaysOfWeekHeader(Graphics g)
+        {
+            foreach (var dayOfWeek in Enumerable.Range(1, 7))
             {
-                foreach (var dayOfWeek in Enumerable.Range(1, 7))
-                {
-                    g.DrawString(dayOfWeekName[dayOfWeek - 1], new Font("Calibri", 20), Brushes.Blue,
-                        (float)(spriteWidth * (dayOfWeek - 0.7)),
-                        (float)(height * 0.1));
-                }
+                g.DrawString(dayOfWeekName[dayOfWeek - 1], new Font("Calibri", 20), Brushes.Blue,
+                    SpriteWidth * (dayOfWeek - 0.7f),
+                    DaysOfWeekHeaderHeight * 0.1f);
             }
-
-            return bitmap;
         }
 
-        private static Bitmap GenerateHeader(string month, int year, int width, int height)
+        private Bitmap GenerateHeader()
         {
-            var bitmap = new Bitmap(width, height);
-
-            using (var g = Graphics.FromImage(bitmap))
-            {
-                g.DrawString(month, new Font("Calibri", 30), Brushes.Blue, 50f, (float)(height / 2 - height * 0.1));
-                g.DrawString(year.ToString(), new Font("Calibri", 30), Brushes.Blue, width - 130, (float)(height / 2 - height * 0.1));
-            }
-            return bitmap;
+            return GenerateBitmap(PageWidth, MainHeaderHeight, DrawMainHeader);
         }
 
-        private static Bitmap GenerateCalendarGrid(int spriteWidth, int spriteHeight, int weeksCount, CalendarPage page)
+        private void DrawMainHeader(Graphics g)
         {
-            var bitmap = new Bitmap(spriteWidth * DaysInWeekCount, spriteHeight * weeksCount);
+            g.DrawString(monthNames[page.Month - 1], new Font("Calibri", 30),
+                Brushes.Blue, 50f, MainHeaderHeight * 0.4f);
+
+            g.DrawString(page.Year.ToString(CultureInfo.InvariantCulture), new Font("Calibri", 30),
+                Brushes.Blue, PageWidth - 130, MainHeaderHeight * 0.4f);
+        }
+
+        private Bitmap GenerateCalendarGrid()
+        {
+            return GenerateBitmap(SpriteWidth*DaysInWeekCount, SpriteHeight*weeksCount, DrawCalendarGrid);
+        }
+
+        private void DrawCalendarGrid(Graphics g)
+        {
             var sprites = Image.FromFile("Sprites/sprite-bg.gif");
+            foreach (var calendarItem in page)
+            {
+                var sprite = GetSpriteForItem(page, calendarItem, sprites);
 
+                g.DrawImage(sprite, calendarItem.Column * SpriteWidth, calendarItem.Row * SpriteHeight);
+
+                var dX = calendarItem.Column * SpriteWidth + SpriteWidth / 2 - 15;
+                var dY = SpriteHeight * (calendarItem.Row + 0.5f) - 15;
+                g.DrawString(calendarItem.DayOfMonth.ToString(CultureInfo.InvariantCulture),
+                    new Font("Arial", 16, FontStyle.Regular), calendarItem.Column == 5 || calendarItem.Column == 6 ? Brushes.Red : Brushes.Blue, dX, dY);
+            }
+        }
+
+        private void Draw(Bitmap bitmap, Action<Graphics> drawer)
+        {
             using (var g = Graphics.FromImage(bitmap))
             {
-                foreach (var calendarItem in page)
-                {
-                    var tmp = calendarItem == page.ItemFotIllumination
-                        ? CropImage(sprites, 0, spriteHeight * 2, spriteWidth, spriteHeight)
-                        : CropImage(sprites, 0, 0, spriteWidth, spriteHeight);
-
-                    g.DrawImage(tmp, calendarItem.Column * spriteWidth, calendarItem.Row * spriteHeight);
-
-                    var dX = calendarItem.Column * spriteWidth + spriteWidth / 2 - 15;
-                    var dY = calendarItem.Row * spriteHeight + spriteHeight / 2 - 15;
-                    g.TranslateTransform(dX, dY);
-                    g.DrawString(calendarItem.DayOfMonth.ToString(),
-                        new Font("Arial", 16, FontStyle.Regular), calendarItem.Column == 5 || calendarItem.Column == 6 ? Brushes.Red : Brushes.Blue, 0, 0);
-                    g.TranslateTransform(-dX, -dY);
-                }
+                drawer(g);
             }
+        }
+
+        private Bitmap GenerateBitmap(int width, int height, Action<Graphics> drawer)
+        {
+            var bitmap = new Bitmap(width, height);
+            Draw(bitmap, drawer);
             return bitmap;
+        }
+
+        private static Image GetSpriteForItem(CalendarPage page, CalendarItem calendarItem, Image sprites)
+        {
+            var tmp = calendarItem == page.ItemFotIllumination
+                ? CropImage(sprites, 0, SpriteHeight * 2, SpriteWidth, SpriteHeight)
+                : CropImage(sprites, 0, 0, SpriteWidth, SpriteHeight);
+            return tmp;
         }
 
         private static Image CropImage(Image image, int x, int y, int width, int height)

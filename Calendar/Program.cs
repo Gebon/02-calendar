@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Globalization;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Win32.SafeHandles;
 
 namespace Calendar
 {
@@ -20,7 +16,8 @@ namespace Calendar
             if (args.Length == 0)
                 date = DateTime.Now;
 
-            var calendarPageView = CalendarPageViewGenerator.GenerateCalendarPageViewForDate(date);
+            
+            var calendarPageView = new CalendarPageViewGenerator(new CalendarPageGenerator(date)).GenerateCalendarPageView();
             calendarPageView.Save("tmp.png");
         }
     }

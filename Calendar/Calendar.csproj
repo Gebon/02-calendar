@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Calendar\Calendar.cs" />
+    <Compile Include="Calendar\CalendarPageGenerator.cs" />
     <Compile Include="Calendar\CalendarItem.cs" />
     <Compile Include="Calendar\CalendarPage.cs" />
     <Compile Include="CalendarPageViewGenerator.cs" />
@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Sprites\sprite-bg.gif">
