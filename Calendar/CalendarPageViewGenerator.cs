@@ -48,7 +48,7 @@ namespace Calendar
             var daysOfWeekHeader = GenerateDaysOfWeekHeader();
             var weeksColumn = GenerateWeeksColumn();
 
-            Action<Graphics> componeCalendarModules = g =>
+            Action<Graphics> arrangeCalendarModules = g =>
             {
                 g.DrawImage(header, 0, 0);
                 g.DrawImage(daysOfWeekHeader, PageWidth - DaysOfWeekHeaderWidth, PageHeight - WeeksColumnHeight);
@@ -56,7 +56,7 @@ namespace Calendar
                 g.DrawImage(calendarGrid, PageWidth - calendarGrid.Width, PageHeight - calendarGrid.Height);
             };
 
-            return GenerateBitmap(PageWidth, PageHeight, componeCalendarModules);
+            return GenerateBitmap(PageWidth, PageHeight, arrangeCalendarModules);
         }
 
         private Bitmap GenerateWeeksColumn()
