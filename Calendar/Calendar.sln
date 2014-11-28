@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calendar", "Calendar.csproj", "{24192FA1-CB94-4E63-8B33-6F90D7502D41}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarPageViewGenerator", "CalendarPageViewGenerator\CalendarPageViewGenerator.csproj", "{D6ABFF36-243F-49B5-A562-618ED87ACA81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainProgram", "MainProgram\MainProgram.csproj", "{27D8EEFB-C9CE-45C6-9055-C183CBEB101F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarPageGenerator", "CalendarPageGenerator\CalendarPageGenerator.csproj", "{24192FA1-CB94-4E63-8B33-6F90D7502D41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,6 +15,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D6ABFF36-243F-49B5-A562-618ED87ACA81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6ABFF36-243F-49B5-A562-618ED87ACA81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6ABFF36-243F-49B5-A562-618ED87ACA81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6ABFF36-243F-49B5-A562-618ED87ACA81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27D8EEFB-C9CE-45C6-9055-C183CBEB101F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27D8EEFB-C9CE-45C6-9055-C183CBEB101F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27D8EEFB-C9CE-45C6-9055-C183CBEB101F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27D8EEFB-C9CE-45C6-9055-C183CBEB101F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{24192FA1-CB94-4E63-8B33-6F90D7502D41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{24192FA1-CB94-4E63-8B33-6F90D7502D41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24192FA1-CB94-4E63-8B33-6F90D7502D41}.Release|Any CPU.ActiveCfg = Release|Any CPU

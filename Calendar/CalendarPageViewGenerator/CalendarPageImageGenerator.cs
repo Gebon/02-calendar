@@ -2,10 +2,11 @@
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using Calendar;
 
-namespace Calendar
+namespace CalendarPageViewGenerator
 {
-    public class CalendarPageViewGenerator
+    public class CalendarPageImageGenerator : ICalendarPageViewGenerator<Bitmap>
     {
         #region Constants and properities declaration
 
@@ -33,22 +34,22 @@ namespace Calendar
         private readonly int weeksCount;
 
         #endregion
-        public CalendarPageViewGenerator(CalendarPageGenerator pageGenerator)
+        public CalendarPageImageGenerator(CalendarPage page)
         {
-            page = pageGenerator.GenerateCalendarPage();
+            this.page = page;
             weeksCount = page.EndWeek - page.StartWeek + 1;
             WeeksColumnHeight = SpriteHeight * weeksCount + DaysOfWeekHeaderHeight;
             PageHeight = WeeksColumnHeight + MainHeaderHeight;
         }
 
-        public Bitmap GenerateCalendarPageView()
+        public Bitmap GenerateView()
         {
             var calendarGrid = GenerateCalendarGrid();
             var header = GenerateHeader();
             var daysOfWeekHeader = GenerateDaysOfWeekHeader();
             var weeksColumn = GenerateWeeksColumn();
 
-            Action<Graphics> arrangeCalendarModules = g =>
+            Action<Graphics> componeCalendarModules = g =>
             {
                 g.DrawImage(header, 0, 0);
                 g.DrawImage(daysOfWeekHeader, PageWidth - DaysOfWeekHeaderWidth, PageHeight - WeeksColumnHeight);
@@ -56,7 +57,7 @@ namespace Calendar
                 g.DrawImage(calendarGrid, PageWidth - calendarGrid.Width, PageHeight - calendarGrid.Height);
             };
 
-            return GenerateBitmap(PageWidth, PageHeight, arrangeCalendarModules);
+            return GenerateBitmap(PageWidth, PageHeight, componeCalendarModules);
         }
 
         private Bitmap GenerateWeeksColumn()
