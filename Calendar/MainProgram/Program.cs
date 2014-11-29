@@ -1,24 +1,23 @@
 ﻿using System;
+using Calendar;
 using CalendarPageViewGenerator;
 
-namespace Calendar
+namespace MainProgram
 {
     class Program
     {
         static void Main(string[] args)
         {
-            var date = new DateTime();
-            if (args.Length != 0 && !DateTime.TryParse(args[0], out date))
+            var date = DateTime.Now;
+            var firstDayOfWeek = DayOfWeek.Monday;
+            if (args.Length != 0 && (!DateTime.TryParse(args[0], out date) || !Enum.TryParse(args[1], true, out firstDayOfWeek)))
             {
-                Console.WriteLine(@"Usage example: calendar.exe 25.01.2145");
+                Console.WriteLine(@"Usage:   calendar.exe <date> <first day of week>");
+                Console.WriteLine(@"Example: calendar.exe 25.01.2145 Monday");
                 Environment.Exit(0);
             }
 
-            if (args.Length == 0)
-                date = DateTime.Now;
-
-
-            var calendarPageView = new CalendarPageImageGenerator(new CalendarPageGenerator().GenerateCalendarPage(date)).GenerateView();
+            var calendarPageView = new CalendarPageImageGenerator(new CalendarPageGenerator().GenerateCalendarPage(date, firstDayOfWeek)).GenerateView();
             calendarPageView.Save("tmp.png");
         }
     }

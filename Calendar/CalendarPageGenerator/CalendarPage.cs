@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Calendar
 {
@@ -10,20 +12,27 @@ namespace Calendar
         public CalendarItem ItemFotIllumination { get; private set; }
         public int Month { get; private set; }
         public int Year { get; private set; }
+        public DayOfWeek FirstDayOfWeek { get; private set; }
 
         private readonly List<CalendarItem> items = new List<CalendarItem>();
 
-        public CalendarPage(IEnumerable<CalendarItem> items, int startWeek, int endWeek, int dayForIllumination,
-            int year, int month)
+        public CalendarPage(IEnumerable<CalendarItem> items, DateTime date, DayOfWeek firstDayOfWeek)
         {
-            StartWeek = startWeek;
-            EndWeek = endWeek;
-            Year = year;
-            Month = month;
+            FirstDayOfWeek = firstDayOfWeek;
+            var calendar = new GregorianCalendar();
+            Year = date.Year;
+            Month = date.Month;
+
+            var firstDayOfMonth = new DateTime(Year, Month, 1);
+            var lastDayOfMonth = new DateTime(Year, Month, calendar.GetDaysInMonth(date.Year, date.Month));
+
+            StartWeek = calendar.GetWeekOfYear(firstDayOfMonth, CalendarWeekRule.FirstDay, FirstDayOfWeek);
+            EndWeek = calendar.GetWeekOfYear(lastDayOfMonth, CalendarWeekRule.FirstDay, FirstDayOfWeek);
+
             foreach (var calendarItem in items)
             {
                 this.items.Add(calendarItem);
-                if (calendarItem.DayOfMonth == dayForIllumination)
+                if (calendarItem.DayOfMonth == date.Day)
                     ItemFotIllumination = calendarItem;
             }
 

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using Calendar;
+using CalendarPageViewGenerator.Properties;
 
 namespace CalendarPageViewGenerator
 {
@@ -11,7 +12,6 @@ namespace CalendarPageViewGenerator
         #region Constants and properities declaration
 
         private readonly string[] monthNames = { "January", "February", "March", "April", "May", "June", "Jule", "August", "September", "October", "November", "December" };
-        private readonly string[] dayOfWeekName = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
         private const int DaysInWeekCount = 7;
 
@@ -51,6 +51,7 @@ namespace CalendarPageViewGenerator
 
             Action<Graphics> componeCalendarModules = g =>
             {
+                g.FillRectangle(Brushes.White, 0, 0, PageWidth, PageHeight);
                 g.DrawImage(header, 0, 0);
                 g.DrawImage(daysOfWeekHeader, PageWidth - DaysOfWeekHeaderWidth, PageHeight - WeeksColumnHeight);
                 g.DrawImage(weeksColumn, 0, PageHeight - WeeksColumnHeight);
@@ -83,10 +84,11 @@ namespace CalendarPageViewGenerator
 
         private void DrawDaysOfWeekHeader(Graphics g)
         {
-            foreach (var dayOfWeek in Enumerable.Range(1, 7))
+            foreach (var dayInWeek in Enumerable.Range(1, 7))
             {
-                g.DrawString(dayOfWeekName[dayOfWeek - 1], new Font("Calibri", 20), Brushes.Blue,
-                    SpriteWidth * (dayOfWeek - 0.7f),
+                var dayOfWeekHeaderGenerator = new DayOfWeekHeaderGenerator();
+                g.DrawString(dayOfWeekHeaderGenerator.GetHeaderForDayInWeek(dayInWeek, page.FirstDayOfWeek), new Font("Calibri", 20), Brushes.Blue,
+                    SpriteWidth * (dayInWeek - 0.7f),
                     DaysOfWeekHeaderHeight * 0.1f);
             }
         }
@@ -107,12 +109,12 @@ namespace CalendarPageViewGenerator
 
         private Bitmap GenerateCalendarGrid()
         {
-            return GenerateBitmap(SpriteWidth*DaysInWeekCount, SpriteHeight*weeksCount, DrawCalendarGrid);
+            return GenerateBitmap(SpriteWidth * DaysInWeekCount, SpriteHeight * weeksCount, DrawCalendarGrid);
         }
 
         private void DrawCalendarGrid(Graphics g)
         {
-            var sprites = Image.FromFile("Sprites/sprite-bg.gif");
+            var sprites = Resources.sprite_bg;
             foreach (var calendarItem in page)
             {
                 var sprite = GetSpriteForItem(page, calendarItem, sprites);
@@ -122,11 +124,11 @@ namespace CalendarPageViewGenerator
                 var dX = calendarItem.Column * SpriteWidth + SpriteWidth / 2 - 15;
                 var dY = SpriteHeight * (calendarItem.Row + 0.5f) - 15;
                 g.DrawString(calendarItem.DayOfMonth.ToString(CultureInfo.InvariantCulture),
-                    new Font("Arial", 16, FontStyle.Regular), calendarItem.Column == 5 || calendarItem.Column == 6 ? Brushes.Red : Brushes.Blue, dX, dY);
+                    new Font("Arial", 16, FontStyle.Regular), calendarItem.IsHolidayOrWeekend ? Brushes.Red : Brushes.Blue, dX, dY);
             }
         }
 
-        private void Draw(Bitmap bitmap, Action<Graphics> drawer)
+        private static void Draw(Bitmap bitmap, Action<Graphics> drawer)
         {
             using (var g = Graphics.FromImage(bitmap))
             {
@@ -134,7 +136,7 @@ namespace CalendarPageViewGenerator
             }
         }
 
-        private Bitmap GenerateBitmap(int width, int height, Action<Graphics> drawer)
+        private static Bitmap GenerateBitmap(int width, int height, Action<Graphics> drawer)
         {
             var bitmap = new Bitmap(width, height);
             Draw(bitmap, drawer);

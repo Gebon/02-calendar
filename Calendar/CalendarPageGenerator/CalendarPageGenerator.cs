@@ -13,15 +13,16 @@ namespace Calendar
         {
         }
 
-        public CalendarPage GenerateCalendarPage(DateTime targetDate)
+        public CalendarPage GenerateCalendarPage(DateTime targetDate, DayOfWeek firstDayOfWeek)
         {
-            startWeek = GetWeekOfYear(targetDate.Year, targetDate.Month, 1);
-            endWeek = GetWeekOfYear(targetDate.Year, targetDate.Month, GetDaysInMonth(targetDate));
+
+            startWeek = GetWeekOfYear(targetDate.Year, targetDate.Month, 1, firstDayOfWeek);
+            endWeek = GetWeekOfYear(targetDate.Year, targetDate.Month, GetDaysInMonth(targetDate), firstDayOfWeek);
 
             var items = Enumerable.Range(1, GetDaysInMonth(targetDate))
-                .Select(day => GetCalendarItemForDay(targetDate.Year, targetDate.Month, day));
+                .Select(day => GetCalendarItemForDay(targetDate.Year, targetDate.Month, day, firstDayOfWeek));
 
-            return new CalendarPage(items, startWeek, endWeek, targetDate.Day, targetDate.Year, targetDate.Month);
+            return new CalendarPage(items,targetDate, firstDayOfWeek);
         }
 
         private int GetDaysInMonth(DateTime targetDate)
@@ -29,20 +30,21 @@ namespace Calendar
             return calendar.GetDaysInMonth(targetDate.Year, targetDate.Month);
         }
 
-        private CalendarItem GetCalendarItemForDay(int year, int month, int day)
+        private CalendarItem GetCalendarItemForDay(int year, int month, int day, DayOfWeek firstDayOfWeek)
         {
             var date = new DateTime(year, month, day);
-            var dayOfWeek = (int) date.DayOfWeek;             //days of week in DateTime start from Sunday
-            dayOfWeek = (dayOfWeek == 0 ? 7 : dayOfWeek) - 1; //so I change it numbering to our local numbering
-            var week = GetWeekOfYear(year, month, day);
-            var calendarItem = new CalendarItem(week - startWeek, dayOfWeek, day);
+            var tmp = (int) firstDayOfWeek;
+            var dayOfWeek = (int) date.DayOfWeek - tmp;             //days of week in DateTime start from Sunday
+            dayOfWeek = (dayOfWeek < 0 ? 7 + dayOfWeek : dayOfWeek); //so I change it numbering to our local numbering
+            var week = GetWeekOfYear(year, month, day, firstDayOfWeek);
+            var calendarItem = new CalendarItem(week - startWeek, dayOfWeek, day, dayOfWeek == 5 || dayOfWeek == 6, date.DayOfWeek);
             return calendarItem;
         }
 
-        private int GetWeekOfYear(int year, int month, int day)
+        private int GetWeekOfYear(int year, int month, int day, DayOfWeek firstDayOfWeek)
         {
             var date = new DateTime(year, month, day);
-            return calendar.GetWeekOfYear(date, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+            return calendar.GetWeekOfYear(date, CalendarWeekRule.FirstDay, firstDayOfWeek);
         }
     }
 }
