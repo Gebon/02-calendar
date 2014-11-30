@@ -14,8 +14,10 @@ namespace Calendar
 
             startWeek = GetWeekOfYear(targetDate.Year, targetDate.Month, 1, firstDayOfWeek);
 
+            var determinant = new DeterminantTheDayOff(targetDate.Year);
+
             var items = Enumerable.Range(1, GetDaysInMonth(targetDate))
-                .Select(day => GetCalendarItemForDay(targetDate.Year, targetDate.Month, day, firstDayOfWeek));
+                .Select(day => GetCalendarItemForDay(targetDate.Year, targetDate.Month, day, firstDayOfWeek, determinant));
 
             return new CalendarPage(items,targetDate, firstDayOfWeek);
         }
@@ -25,14 +27,14 @@ namespace Calendar
             return calendar.GetDaysInMonth(targetDate.Year, targetDate.Month);
         }
 
-        private CalendarItem GetCalendarItemForDay(int year, int month, int day, DayOfWeek firstDayOfWeek)
+        private CalendarItem GetCalendarItemForDay(int year, int month, int day, DayOfWeek firstDayOfWeek, DeterminantTheDayOff determinant)
         {
             var date = new DateTime(year, month, day);
             var tmp = (int) firstDayOfWeek;
-            var dayOfWeek = (int) date.DayOfWeek - tmp;             //days of week in DateTime start from Sunday
-            dayOfWeek = (dayOfWeek < 0 ? 7 + dayOfWeek : dayOfWeek); //so I change it numbering to our local numbering
+            var dayInWeek = (int) date.DayOfWeek - tmp;
+            dayInWeek = (dayInWeek < 0 ? 7 + dayInWeek : dayInWeek);
             var week = GetWeekOfYear(year, month, day, firstDayOfWeek);
-            var calendarItem = new CalendarItem(week - startWeek, dayOfWeek, day, dayOfWeek == 5 || dayOfWeek == 6, date.DayOfWeek);
+            var calendarItem = new CalendarItem(week - startWeek, dayInWeek, day, determinant.IsDayOff(month, day, dayInWeek), date.DayOfWeek);
             return calendarItem;
         }
 
