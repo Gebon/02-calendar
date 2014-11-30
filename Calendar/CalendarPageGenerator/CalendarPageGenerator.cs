@@ -8,16 +8,11 @@ namespace Calendar
     {
         private readonly GregorianCalendar calendar = new GregorianCalendar();
         private int startWeek;
-        private int endWeek;
-        public CalendarPageGenerator()
-        {
-        }
 
         public CalendarPage GenerateCalendarPage(DateTime targetDate, DayOfWeek firstDayOfWeek)
         {
 
             startWeek = GetWeekOfYear(targetDate.Year, targetDate.Month, 1, firstDayOfWeek);
-            endWeek = GetWeekOfYear(targetDate.Year, targetDate.Month, GetDaysInMonth(targetDate), firstDayOfWeek);
 
             var items = Enumerable.Range(1, GetDaysInMonth(targetDate))
                 .Select(day => GetCalendarItemForDay(targetDate.Year, targetDate.Month, day, firstDayOfWeek));

@@ -1,4 +1,6 @@
-﻿namespace CalendarPageViewGenerator
+﻿using CalendarPageViewGenerator.Interfaces;
+
+namespace CalendarPageViewGenerator
 {
     public class CalendarPageHtmlGenerator : ICalendarPageViewGenerator<string>
     {

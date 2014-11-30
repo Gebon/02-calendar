@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace CalendarPageViewGenerator
+namespace CalendarPageViewGenerator.AdditionalGenerator
 {
-    public class DayOfWeekHeaderGenerator
+    public class DayOfWeekNameGenerator
     {
         private readonly Dictionary<DayOfWeek, string> dayOfWeekName = new Dictionary<DayOfWeek, string>
         {

@@ -32,6 +32,8 @@ namespace Calendar
             foreach (var calendarItem in items)
             {
                 this.items.Add(calendarItem);
+                if (calendarItem.DayOfMonth < 1 || calendarItem.DayOfMonth > lastDayOfMonth.Day)
+                    throw new ArgumentOutOfRangeException("calendarItem.DayOfMonth", calendarItem.DayOfMonth, "month day out of range");
                 if (calendarItem.DayOfMonth == date.Day)
                     ItemFotIllumination = calendarItem;
             }
