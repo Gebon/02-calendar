@@ -1,15 +1,12 @@
 using System;
-using System.Drawing.Drawing2D;
-using System.Globalization;
 using System.Linq;
-using System.Net;
 using HtmlAgilityPack;
 
 namespace Calendar
 {
     public class DeterminantTheDayOff
     {
-        private int[][] months;
+        private readonly int[][] months;
         public DeterminantTheDayOff(int year)
         {
             try

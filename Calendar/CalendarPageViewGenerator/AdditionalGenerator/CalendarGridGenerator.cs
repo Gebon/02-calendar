@@ -39,7 +39,7 @@ namespace CalendarPageViewGenerator.AdditionalGenerator
                 var dX = calendarItem.Column * spriteWidth + spriteWidth / 2 - 15;
                 var dY = spriteHeight * (calendarItem.Row + 0.5f) - 15;
                 g.DrawString(calendarItem.DayOfMonth.ToString(CultureInfo.InvariantCulture),
-                    new Font("Arial", 16, FontStyle.Regular), calendarItem.IsHolidayOrWeekend ? Brushes.Red : Brushes.Blue, dX, dY);
+                    new Font("Arial", 16, FontStyle.Regular), calendarItem.IsDayOff ? Brushes.Red : Brushes.Blue, dX, dY);
             }
         }
 
